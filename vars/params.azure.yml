@@ -1,0 +1,15 @@
+---
+
+systemconfiguration:
+  global_tenant_config:
+    se_in_provider_context: true
+    tenant_access_to_provider_se: true
+    tenant_vrf: true
+
+cloud:
+  tenant_ref: /api/tenant/?name=admin
+  auth_url: http://172.16.1.5/identity/v3
+  username: admin
+  password: avi123
+  mgmt_network_name: net-avi
+  tenant_se: false

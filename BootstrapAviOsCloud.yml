@@ -1,0 +1,143 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - "vars/creds.yml"
+    - "vars/params.yml"
+
+  roles:
+    - role: "avinetworks.avisdk"
+
+  tasks:
+
+  - name: Update user password
+    avi_useraccount:
+      controller: "{{avi_credentials.controller}}"
+      username: "{{avi_credentials.username}}"
+      password: "{{avi_credentials.password}}"
+      old_password: 58NFaGDJm(PJH0G
+      api_version: "{{avi_credentials.api_version}}"
+    ignore_errors: yes
+
+  - name: Configure Avi System parameters
+    avi_systemconfiguration:
+      avi_api_update_method: patch
+      avi_api_patch_op: add
+      controller: "{{avi_credentials.controller}}"
+      username: "{{avi_credentials.username}}"
+      password: "{{avi_credentials.password}}"
+      api_version: "{{avi_credentials.api_version}}"
+      global_tenant_config:
+        se_in_provider_context: "{{ systemconfiguration.global_tenant_config.se_in_provider_context }}"
+        tenant_access_to_provider_se: "{{ systemconfiguration.global_tenant_config.tenant_access_to_provider_se }}"
+        tenant_vrf: "{{ systemconfiguration.global_tenant_config.tenant_vrf }}"
+
+# url: https://200.1.1.2/api/systemconfiguration
+# uuid: default
+# _last_modified: '1546784963438440'
+# email_configuration:
+#   disable_tls: false
+#   from_email: admin@avicontroller.net
+#   mail_server_port: 25
+#   smtp_type: SMTP_LOCAL_HOST
+#   mail_server_name: localhost
+# global_tenant_config:
+#   se_in_provider_context: true
+#   tenant_access_to_provider_se: true
+#   tenant_vrf: false
+# dns_configuration:
+#   search_domain: ''
+# ssh_hmacs:
+# - hmac-sha2-512-etm@openssh.com
+# - hmac-sha2-256-etm@openssh.com
+# - umac-128-etm@openssh.com
+# - hmac-sha2-512
+# docker_mode: false
+# portal_configuration:
+#   use_uuid_from_input: false
+#   redirect_to_https: true
+#   sslprofile_ref: https://200.1.1.2/api/sslprofile/sslprofile-b07bf1b8-900e-46f5-9dbf-0413449d63e9
+#   sslkeyandcertificate_refs:
+#   - https://200.1.1.2/api/sslkeyandcertificate/sslkeyandcertificate-7f395f3b-63b7-42e3-a0d9-d744a84d5f42
+#   - https://200.1.1.2/api/sslkeyandcertificate/sslkeyandcertificate-f792d842-3107-4365-be09-2e4902fe9e6b
+#   enable_clickjacking_protection: true
+#   enable_https: true
+#   disable_remote_cli_shell: false
+#   password_strength_check: true
+#   enable_http: true
+#   allow_basic_authentication: false
+# ntp_configuration:
+#   ntp_servers:
+#   - server:
+#       type: DNS
+#       addr: 0.us.pool.ntp.org
+#   - server:
+#       type: DNS
+#       addr: 1.us.pool.ntp.org
+#   - server:
+#       type: DNS
+#       addr: 2.us.pool.ntp.org
+#   - server:
+#       type: DNS
+#       addr: 3.us.pool.ntp.org
+# ssh_ciphers:
+# - aes128-ctr
+# - aes256-ctr
+# - arcfour256
+# - arcfour128
+# default_license_tier: ENTERPRISE_18
+
+
+
+
+  - name: Create an OpenStack cloud with write access mode
+    avi_cloud:
+      avi_api_update_method: patch
+      avi_api_patch_op: add
+      username: '{{ avi_credentials.username }}'
+      controller: '{{ avi_credentials.controller }}'
+      password: '{{ avi_credentials.password }}'
+      api_version: '{{ avi_credentials.api_version }}'
+      vtype: CLOUD_OPENSTACK
+      license_tier: ENTERPRISE_18
+      enable_vip_static_routes: false
+      ip6_autocfg_enabled: false
+      tenant_ref: "{{ cloud.tenant_ref }}"
+      openstack_configuration:
+        nuage_virtualip: false
+        allowed_address_pairs: true
+        use_internal_endpoints: false
+        auth_url: "{{ cloud.auth_url }}"
+        security_groups: true
+        admin_tenant: admin
+        name_owner: true
+        map_admin_to_cloudadmin: false
+        privilege: WRITE_ACCESS
+        free_floatingips: false
+        config_drive: true
+        username: "{{ cloud.username }}"
+        insecure: false
+        mgmt_network_name: "{{ cloud.mgmt_network_name }}"
+        tenant_se: "{{ cloud.tenant_se }}"
+        contrail_plugin: false
+        port_security: false
+        anti_affinity: true
+        password: "{{ cloud.password }}"
+        use_keystone_auth: true
+        contrail_disable_policy: false
+        import_keystone_tenants: true
+        neutron_rbac: true
+        hypervisor: KVM
+        region: RegionOne
+        nuage_port: 8443
+        use_admin_url: true
+        img_format: OS_IMG_FMT_AUTO
+        external_networks: false
+      dhcp_enabled: true
+      prefer_static_routes: false
+      license_type: LIC_CORES
+      mtu: 1500
+      apic_mode: false
+      state_based_dns_registration: true
+      name: Default-Cloud
